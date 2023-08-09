@@ -11,7 +11,7 @@ tokenizer = AutoTokenizer.from_pretrained("SamLowe/roberta-base-go_emotions")
 model = AutoModelForSequenceClassification.from_pretrained("SamLowe/roberta-base-go_emotions")
 
 openai.organization = "org-esyDe83fzs5JWkeZOuyervFy"
-openai.api_key = "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"
+openai.api_key = os.environ["OPENAI_API_KEY"]
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 def sentimentAnalysis(text):
