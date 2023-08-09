@@ -33,7 +33,7 @@ def sentimentAnalysis(text):
     for prob, class_idx in sorted_probs:
         sentiments[model.config.id2label[class_idx]] = f"{prob*100:.2f}%"
 
-    print sentiments
+    print(sentiments)
     return sentiments
 
 
