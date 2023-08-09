@@ -460,6 +460,8 @@ class LMModel(StreamingModule):
 
         B, K, T = prompt.shape
         start_offset = T
+        print(f"start_offset: {start_offset}")
+        print(f"max_gen_len: {max_gen_len}")
         assert start_offset < max_gen_len
 
         pattern = self.pattern_provider.get_pattern(max_gen_len)
