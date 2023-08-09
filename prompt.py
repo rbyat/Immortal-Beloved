@@ -33,6 +33,7 @@ def sentimentAnalysis(text):
     for prob, class_idx in sorted_probs:
         sentiments[model.config.id2label[class_idx]] = f"{prob*100:.2f}%"
 
+    print sentiments
     return sentiments
 
 
@@ -104,5 +105,6 @@ def generatePrompt(sentiments, input_extra):
     )
 
     parameterOutput = parameterResponse['choices'][0]['message']['content']
+    print(parameterOutput)
     return(parameterOutput)
 
