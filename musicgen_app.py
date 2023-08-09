@@ -16,6 +16,7 @@ from tempfile import NamedTemporaryFile
 import time
 import typing as tp
 import warnings
+import prompt
 
 import torch
 import gradio as gr
@@ -210,10 +211,9 @@ def ui_full(launch_kwargs):
     with gr.Blocks() as interface:
         gr.Markdown(
             """
-            # MusicGen
-            This is your private demo for [MusicGen](https://github.com/facebookresearch/audiocraft),
-            a simple and controllable model for music generation
-            presented at: ["Simple and Controllable Music Generation"](https://huggingface.co/papers/2306.05284)
+            # Immortal Beloved
+            This is your private program for Immortal Beloved, the software used to produce AI-generated music to be used in productions of "Man and Muse" by Rushil Byatnal.
+            Models used: Audiocraft by Meta, GPT-4 by OpenAI, and RoBERTa by Meta ([trained by Sam Lowe](https://huggingface.co/SamLowe/roberta-base-go_emotions))
             """
         )
         with gr.Row():
@@ -221,8 +221,8 @@ def ui_full(launch_kwargs):
                 with gr.Row():
                     text = gr.Text(label="Input Text", interactive=True)
                     with gr.Column():
-                        radio = gr.Radio(["file", "mic"], value="file",
-                                         label="Condition on a melody (optional) File or Mic")
+                        extra = gr.Text(label="Any additional parameters?", interactive=True, value =" ")
+                        duration = gr.Slider(minimum=0, maximum=120, value=0, label="Custom Time? Set to 0 if you instead want the time automatically set based on the length of the text.", interactive=True)
                         melody = gr.Audio(source="upload", type="numpy", label="File",
                                           interactive=True, elem_id="melody-input")
                 with gr.Row():
@@ -234,10 +234,8 @@ def ui_full(launch_kwargs):
                                       "facebook/musicgen-large"],
                                      label="Model", value="facebook/musicgen-melody", interactive=True)
                 with gr.Row():
-                    decoder = gr.Radio(["Default", "MultiBand_Diffusion"],
-                                       label="Decoder", value="Default", interactive=True)
-                with gr.Row():
-                    duration = gr.Slider(minimum=1, maximum=120, value=10, label="Duration", interactive=True)
+                    decoder = gr.Radio(["MultiBand_Diffusion", "Default"],
+                                       label="Decoder", value="MultiBand_Diffusion", interactive=True)
                 with gr.Row():
                     topk = gr.Number(label="Top-k", value=250, interactive=True)
                     topp = gr.Number(label="Top-p", value=0, interactive=True)
@@ -249,59 +247,23 @@ def ui_full(launch_kwargs):
                 diffusion_output = gr.Video(label="MultiBand Diffusion Decoder")
                 audio_diffusion = gr.Audio(label="MultiBand Diffusion Decoder (wav)", type='filepath')
         submit.click(toggle_diffusion, decoder, [diffusion_output, audio_diffusion], queue=False,
-                     show_progress=False).then(predict_full, inputs=[model, decoder, text, melody, duration, topk, topp,
+                     show_progress=False).then(predict_full, inputs=[model, decoder, gr.Markdown(prompt.generatePrompt(text, extra), visible=False), melody, prompt.generateTime(text, duration), topk, topp,
                                                                      temperature, cfg_coef],
                                                outputs=[output, audio_output, diffusion_output, audio_diffusion])
-        radio.change(toggle_audio_src, radio, [melody], queue=False, show_progress=False)
 
-        gr.Examples(
-            fn=predict_full,
-            examples=[
-                [
-                    "An 80s driving pop song with heavy drums and synth pads in the background",
-                    "./assets/bach.mp3",
-                    "facebook/musicgen-melody",
-                    "Default"
-                ],
-                [
-                    "A cheerful country song with acoustic guitars",
-                    "./assets/bolero_ravel.mp3",
-                    "facebook/musicgen-melody",
-                    "Default"
-                ],
-                [
-                    "90s rock song with electric guitar and heavy drums",
-                    None,
-                    "facebook/musicgen-medium",
-                    "Default"
-                ],
-                [
-                    "a light and cheerly EDM track, with syncopated drums, aery pads, and strong emotions",
-                    "./assets/bach.mp3",
-                    "facebook/musicgen-melody",
-                    "Default"
-                ],
-                [
-                    "lofi slow bpm electro chill with organic samples",
-                    None,
-                    "facebook/musicgen-medium",
-                    "Default"
-                ],
-                [
-                    "Punk rock with loud drum and power guitar",
-                    None,
-                    "facebook/musicgen-medium",
-                    "MultiBand_Diffusion"
-                ],
-            ],
-            inputs=[text, melody, model, decoder],
-            outputs=[output]
-        )
         gr.Markdown(
             """
             ### More details
 
-            The model will generate a short music extract based on the description you provided.
+            The model will generate a short musical extract based on the text provided. This is done through a sentiment
+            analysis of the text and an attempt to recreate the same sentiment profile through music parameters. In other words,
+            this is the computer's attempt to translate your text into music (currently restricted to solo piano in the 
+            style of Beethoven).
+
+
+
+            The following details are provided by Meta regarding their Audiocraft model:
+
             The model can generate up to 30 seconds of audio in one pass. It is now possible
             to extend the generation by feeding back the end of the previous chunk of audio.
             This can take a long time, and the model might lose consistency. The model might also
