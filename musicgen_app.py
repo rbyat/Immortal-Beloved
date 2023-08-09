@@ -219,7 +219,7 @@ def ui_full(launch_kwargs):
         with gr.Row():
             with gr.Column():
                 with gr.Row():
-                    text = gr.Text(label="Input Text", interactive=True)
+                    text = gr.Text(label="Input Text", interactive=True, value = "")
                     with gr.Column():
                         extra = gr.Text(label="Any additional parameters?", interactive=True, value =" ")
                         duration = gr.Slider(minimum=0, maximum=120, value=0, label="Custom Time? Set to 0 if you instead want the time automatically set based on the length of the text.", interactive=True)
@@ -247,7 +247,7 @@ def ui_full(launch_kwargs):
                 diffusion_output = gr.Video(label="MultiBand Diffusion Decoder")
                 audio_diffusion = gr.Audio(label="MultiBand Diffusion Decoder (wav)", type='filepath')
         submit.click(toggle_diffusion, decoder, [diffusion_output, audio_diffusion], queue=False,
-                     show_progress=False).then(predict_full, inputs=[model, decoder, gr.Markdown(prompt.generatePrompt(text, extra), visible=True), melody, prompt.generateTime(text, duration), topk, topp,
+                     show_progress=False).then(predict_full, inputs=[model, decoder, gr.Markdown(prompt.generatePrompt(text.value, extra), visible=True), melody, prompt.generateTime(text, duration), topk, topp,
                                                                      temperature, cfg_coef],
                                                outputs=[output, audio_output, diffusion_output, audio_diffusion])
 
