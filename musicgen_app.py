@@ -247,7 +247,7 @@ def ui_full(launch_kwargs):
                 diffusion_output = gr.Video(label="MultiBand Diffusion Decoder")
                 audio_diffusion = gr.Audio(label="MultiBand Diffusion Decoder (wav)", type='filepath')
         submit.click(toggle_diffusion, decoder, [diffusion_output, audio_diffusion], queue=False,
-                     show_progress=False).then(predict_full, inputs=[model, decoder, gr.Markdown(prompt.generatePrompt(text, extra), visible=False), melody, prompt.generateTime(text, duration), topk, topp,
+                     show_progress=False).then(predict_full, inputs=[model, decoder, gr.Markdown(prompt.generatePrompt(text, extra), visible=True), melody, prompt.generateTime(text, duration), topk, topp,
                                                                      temperature, cfg_coef],
                                                outputs=[output, audio_output, diffusion_output, audio_diffusion])
 
