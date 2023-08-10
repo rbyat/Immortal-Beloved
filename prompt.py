@@ -2,6 +2,8 @@ import os
 import openai
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from torch.nn import Softmax
+import gradio as gr
+import musicgen_app
 
 
 
@@ -100,7 +102,7 @@ def generateParameters(sentiments, input_extra):
             },
             {
                 "role": "user",
-                "content": str(sentiments)+" and here are the additional parameters that should override (none given if blank): "+input_extra.value
+                "content": sentiments+" and here are the additional parameters that should override (none given if blank): "
             }
         ]
     )
@@ -112,7 +114,9 @@ def generateParameters(sentiments, input_extra):
 
 def generatePrompt(input_text, input_extra):
     
-    sent = sentimentAnalysis(input_text)
+    sent = sentimentAnalysis(input_text.value)
+    print("foo sent")
+    print(sent)
     prompt = generateParameters(sent, input_extra)
 
     return prompt

@@ -206,6 +206,24 @@ def toggle_diffusion(choice):
     else:
         return [gr.update(visible=False)] * 2
 
+input_text = None
+input_extra = None
+input_duration = None
+
+def capture_text(description):
+    global input_text
+    input_text = description
+    return "Text captured!"
+    
+def capture_extra(description):
+    global input_extra
+    input_extra = description
+    return "Extra captured!"
+
+def capture_duration(description):
+    global input_duration
+    input_duration = description
+    return "Duration captured!"
 
 def ui_full(launch_kwargs):
     with gr.Blocks() as interface:
@@ -220,6 +238,8 @@ def ui_full(launch_kwargs):
             with gr.Column():
                 with gr.Row():
                     text = gr.Text(label="Input Text", interactive=True, value = "")
+                    print("foo text")
+                    print(text)
                     with gr.Column():
                         extra = gr.Text(label="Any additional parameters?", interactive=True, value =" ")
                         duration = gr.Slider(minimum=0, maximum=120, value=0, label="Custom Time? Set to 0 if you instead want the time automatically set based on the length of the text.", interactive=True)
@@ -247,7 +267,7 @@ def ui_full(launch_kwargs):
                 diffusion_output = gr.Video(label="MultiBand Diffusion Decoder")
                 audio_diffusion = gr.Audio(label="MultiBand Diffusion Decoder (wav)", type='filepath')
         submit.click(toggle_diffusion, decoder, [diffusion_output, audio_diffusion], queue=False,
-                     show_progress=False).then(predict_full, inputs=[model, decoder, gr.Markdown(prompt.generatePrompt(text.value, extra), visible=True), melody, prompt.generateTime(text, duration), topk, topp,
+                     show_progress=False).then(predict_full, inputs=[model, decoder, prompt.generatePrompt(text, extra), melody, prompt.generateTime(text, duration), topk, topp,
                                                                      temperature, cfg_coef],
                                                outputs=[output, audio_output, diffusion_output, audio_diffusion])
 
@@ -317,7 +337,9 @@ def ui_batched(launch_kwargs):
         with gr.Row():
             with gr.Column():
                 with gr.Row():
-                    text = gr.Text(label="Describe your music", lines=2, interactive=True)
+                    text = gr.Text(label="Describe your music", lines=2, interactive=True, value="")
+                    print("foo text")
+                    print(text)
                     with gr.Column():
                         radio = gr.Radio(["file", "mic"], value="file",
                                          label="Condition on a melody (optional) File or Mic")
