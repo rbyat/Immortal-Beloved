@@ -1,7 +1,6 @@
 import os
 import openai
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
-from torch.nn import Softmax
+
 import gradio as gr
 import musicgen_app
 
@@ -112,11 +111,3 @@ def generateParameters(sentiments, input_extra):
     print(parameterOutput)
     return(parameterOutput)
 
-def generatePrompt(input_text, input_extra):
-    
-    sent = sentimentAnalysis(input_text.value)
-    print("foo sent")
-    print(sent)
-    prompt = generateParameters(sent, input_extra)
-
-    return prompt
